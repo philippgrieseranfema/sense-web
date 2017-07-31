@@ -1,6 +1,6 @@
 # Ember D3 Workshop
 
-This is a simple example of using D3 in an Ember app. 
+This is a simple example of using D3 in an Ember app.
 The concepts used here are not really tied to Ember, and can certainly also be used in other contexts.
 You can review the Commit History to see how this example came to be, step by step.
 
@@ -53,7 +53,7 @@ Helpful commands:
 
 ## Bar Chart
 
-First, we want to create the general application route. 
+First, we want to create the general application route.
 You can have multiple routes in an app, but for our example we will only use the base application route.
 
 ```
@@ -135,11 +135,11 @@ export default Ember.Component.extend({
 });
 ```
 
-The imports on top are an ES6 feature, modules, that ember-cli allows us to use. 
+The imports on top are an ES6 feature, modules, that ember-cli allows us to use.
 Don't worry, all of these things are automatically transpiled into a JavaScript
 version that browsers can actually work with.
 
-Then, we add skeleton functions to the component, that we will later fill out. 
+Then, we add skeleton functions to the component, that we will later fill out.
 We also add some data that represents people and their ages.
 
 ### addSVG
@@ -162,41 +162,41 @@ addSVG: function() {
   this.set('chartSVG', svg);
 }
  ```
- 
- In this function, we specify a desired height for our chart, 
+
+ In this function, we specify a desired height for our chart,
  and compute the width based on the container element's width.
- 
- We then create an SVG element with D3, set its height and width, 
- and append it to the container element. 
- `preserveAspectRatio` is set to ensure that the aspect ratio stays the same 
+
+ We then create an SVG element with D3, set its height and width,
+ and append it to the container element.
+ `preserveAspectRatio` is set to ensure that the aspect ratio stays the same
  when the size of the chart changes.
- 
+
  We then save the svg element for later reference.
- 
+
 ### drawData
- 
+
  Next, we want to actually draw the data in the SVG.
  D3 uses a regular coordinate system, where X and Y values can be set in pixels.
- This means that we need to map values to a range of pixels. 
+ This means that we need to map values to a range of pixels.
  D3 can handle all of these things. Still, it needs to know the height and width to map values to.
  We set the width in the addSVG function before, but we will need it more often
  in different functions. In order to reduce code duplciation, we can specify them as properties in the component:
- 
+
  ```js
  chartHeight: 400,
- 
+
  chartWidth: Ember.computed(function() {
    return this.$().width();
  }),
  ```
 
-The `chartHeight` is a static property, that we can simply set. 
+The `chartHeight` is a static property, that we can simply set.
 The `chartWidth` is a dynamic property that needs to be computed at runtime.
-For this, Ember provides computed properties via `Ember.computed()`. 
-The return value of the provided function will then be the value of the `chartWidth` 
+For this, Ember provides computed properties via `Ember.computed()`.
+The return value of the provided function will then be the value of the `chartWidth`
 property. And don't worry, it will only be computed once and then be cached.
 
-Now we can access both of these properties via `this.get('propertyName')`. 
+Now we can access both of these properties via `this.get('propertyName')`.
 First, let's replace the occurrences in the `addSVG` function:
 
 ```js
@@ -223,14 +223,14 @@ drawData: function() {
 }
 ```
 
-For the bar chart, we use a band scale for the x axis. 
+For the bar chart, we use a band scale for the x axis.
 This scale will take a range of values, and separate them into 'bands'.
 This is well suited for bar charts, because every bar will get its own band
 and all of them will be the same width. The scale should be mapped to a range
-from 0 to the chart width, and we also specify some padding for the bands - 
-otherwise, the bars would stick to each other. 
+from 0 to the chart width, and we also specify some padding for the bands -
+otherwise, the bars would stick to each other.
 The domain that is mapped to the range is the data. We use ember's `Array.mapBy('propertyName')`
-method here. This turns the data into an array like this: `['John', 'Anne', 'Robert']`. 
+method here. This turns the data into an array like this: `['John', 'Anne', 'Robert']`.
 
 Now, when you call `x('John')` you get the corresponding x value for the range band
 that D3 has calculated for you.
@@ -249,8 +249,8 @@ var y = d3.scaleLinear()
 
 The y scale works similar. First, we need to know what the highest and lowest possible
 values are. `d3.extend()` does that for us.
-We than map that domain to a range from the chart height to 0. 
-Note how this is inversed - we map the smallest value to chartHeight, and the highest value to 0. 
+We than map that domain to a range from the chart height to 0.
+Note how this is inversed - we map the smallest value to chartHeight, and the highest value to 0.
 This is because the coordinate system that D3 uses has its origin in the upper
 left corner. This means that we want the highest value to end at y=0, and the lowest value
 to end at y=400.
@@ -282,7 +282,7 @@ bars.enter()
     return height - y(d.value);
   })
   .attr('fill', color);
-``` 
+```
 
 This probably looks a bit weird: We select the bars - but there is nothing to select yet?
 D3 lets you select collection, even if they are empty, and add data to them.
@@ -292,7 +292,7 @@ D3 works like this:
 
 * Select a collection - even if it doesn't exist yet. Select what you want to have as a result.
 * Add data via `.data(myData, mapFunction)`. The mapFunction is optional and only used to handle updating values.
-* Call `.enter()` on the collection after specifiying the data. 
+* Call `.enter()` on the collection after specifiying the data.
 This will then run the commands specified after it on every item that has been added to the selection.
 
 So for every new data point, we:
@@ -341,14 +341,14 @@ yScale: Ember.computed(function() {
 })
 ```
 
-We can now simplify the `drawData()` function: 
+We can now simplify the `drawData()` function:
 
 ```js
-// ... 
- 
+// ...
+
  var x = this.get('xScale');
- var y = this.get('yScale'); 
-``` 
+ var y = this.get('yScale');
+```
 
 Next, we implement a function to draw the x axis:
 
@@ -376,7 +376,7 @@ createXAxisElement: function() {
 
 This function takes the xScale, and creates an axis with D3's `d3.axisBottom`.
 We then create an SVG group (`g`) and append it to the SVG. We move it to the very bottom of the chart,
-and then append the actual axis to it with `.call(xAxis)`. 
+and then append the actual axis to it with `.call(xAxis)`.
 Then, we select all text that has been generated by the axis automatically, and style it
 to fit our needs.
 
@@ -389,13 +389,13 @@ Now, we need to actually call this function in `createChart()`:
 this.createXAxisElement();
 ```
 
-However, it turns our you can't really see anything - this is because the axis starts at the bottom of the SVG and then runs out of it, 
+However, it turns our you can't really see anything - this is because the axis starts at the bottom of the SVG and then runs out of it,
 which is automatically hidden. So we need to increase the SVG size:
 
 ```js
 addSVG: function() {
-  // ... 
-  var height = this.get('chartHeight') + 100;  
+  // ...
+  var height = this.get('chartHeight') + 100;
 }
 ```
 
@@ -403,15 +403,15 @@ Now, the axis should be visible on the bottom.
 
 ### Improve positioning for axes
 
-The 'fix' with adding 100 to the chart height kind of works, but is not really nice - 
+The 'fix' with adding 100 to the chart height kind of works, but is not really nice -
 now, the chart is bigger than the 400px we specified it to be. Also,
 we will run in the same problem for the y-axis, which should be on the
 left hand side of the chart. We would need to adapt all x-positioning accordingly.
 
-Luckily, there is a better way to handle this. 
-Our goal is to specify margins around our actual chart, where things 
+Luckily, there is a better way to handle this.
+Our goal is to specify margins around our actual chart, where things
 like axes or potentially legends could be positioned without obstructing the data.
- 
+
 So let's first specify these margins as a property:
 
 ```js
@@ -473,7 +473,7 @@ We then create the SVG and set its dimensions to the full width & height.
 
 Then, we append a group `g` to the SVG, which we move to the correct position.
 We then save the `g` as `chartSVG` (and the container as `chartContainer`).
- 
+
 This means, that whenever we append something to `chartSVG`, it will
 actually be appended to the inner container - which is positioned nicely.
 We now have the specified margins as space for other things like axes.
@@ -509,7 +509,7 @@ Now, we can finally add the y axis.
 }
 ```
 
-Most of this should look pretty familiar by now. 
+Most of this should look pretty familiar by now.
 We calculate the tick values manually (you can also let D3 do this for you,
 but this sometimes does weird things for small data sets).
 
@@ -518,7 +518,7 @@ and voila!
 
 ### Feed data into the chart
 
-Currently, we hard-coded the data into the component. This is obviously not ideal - 
+Currently, we hard-coded the data into the component. This is obviously not ideal -
 we want to be able to pass in whatever data we want!
 
 First, let's remove the default data from the component:
@@ -586,7 +586,7 @@ That's it! We now have a simple bar chart that we can easily feed data into.
 ## Line Chart
 
 Next, we also want to implement a line chart.
-When you think about it, a bar chart and a line chart share most things. 
+When you think about it, a bar chart and a line chart share most things.
 Really, there are only two differences:
 
 * The data is structured different
@@ -600,11 +600,11 @@ However, Ember provides a somewhat similar concept: Mixins.
 Each class can include one or more mixins. It can then override all properties/methods
 from the mixin. So let's move all our general data into a `ChartMixin`!
 
-A mixin can be generated with 
+A mixin can be generated with
 
 ```
 ember generate mixin chart
-``` 
+```
 
 Then, copy _everything_ from the bar-chart component into the mixin, except for the `drawData()` function.
 
@@ -621,7 +621,7 @@ export default Ember.Component.extend(ChartMixin, {
 
   drawData: function() {
     // ...
-  } 
+  }
 
 });
 ```
@@ -647,7 +647,7 @@ export default Ember.Component.extend(ChartMixin, {
 
   drawData: function() {
     // TODO: Implement this
-  } 
+  }
 
 });
 ```
@@ -675,7 +675,7 @@ model: function() {
        color: 'blue'
      }
    ];
-   
+
    return {
      barChart: barChartData,
      lineChart: lineChartData
@@ -692,7 +692,7 @@ And adapt the application template:
 
 <h2>Age per person</h2>
 {{bar-chart data=model.barChart}}
-``` 
+```
 
 Now, we have our basic setup done. We only need to implement the `drawData()` function to see the actual graph.
 But before that, we'll need to update the scales of the chart to reflect our changed data model.
@@ -733,7 +733,7 @@ This way, the values for the different items will always be rendered at the same
 
 ### y-scale
 
-The y-scale works the same way as for the bar-chart. 
+The y-scale works the same way as for the bar-chart.
 The only difference is that we need to take all the values into account to
 check for the lowest and highest possible score.
 
@@ -756,7 +756,7 @@ yScale: Ember.computed('data.[]', 'chartHeight', function() {
 
 Note that we use Ember's `Array.pushObjects(otherArray)`, which allows us to
 append an array's elements to another array.
-So we build an array containing all values from all items, and pass this combined array into 
+So we build an array containing all values from all items, and pass this combined array into
 `d3.extent()`. Then, we build the scale the same way as before.
 
 ### drawData
@@ -841,25 +841,25 @@ to include simple logic into your templates.
 We iterate over each item in the `model.lineChart` array.
 For each of those, we create a span, set the color, and output the person's name.
 
-While this is not a very pretty solution, it should be enough to illustrate how 
+While this is not a very pretty solution, it should be enough to illustrate how
 something like this can be done!
 
 ## Conclusion
 
 There is much more that could/should be done here:
 
-* While our chart will adapt to the available screen size, it will not resize 
+* While our chart will adapt to the available screen size, it will not resize
 if you resize your window.
 * We currently don't handle chaning data & updating charts
 * We could style our charts with CSS
 * We could make our charts interactive, add hover states and much more
 
-Still, this should be a good starting point for further exploration. 
+Still, this should be a good starting point for further exploration.
 There are a lot of great tutorials out there covering specific things in detail.
 It can be difficult to get into the 'D3-Mindset'. But once you do,
 you can do incredibly complex and awe-inducing things with it.
 
-As an exercise, try to throw different/larger datasets at our components. 
+As an exercise, try to throw different/larger datasets at our components.
 See how D3 reacts to these changes. It will help you understand
 what's going on under the hood.
 
